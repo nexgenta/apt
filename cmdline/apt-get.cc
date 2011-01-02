@@ -53,8 +53,18 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#ifdef HAVE_SYS_STATFS_H
 #include <sys/statfs.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#ifdef HAVE_SYS_MOUNT_H
+#include <sys/mount.h>
+#endif
+#ifdef HAVE_SYS_STATVFS_H
 #include <sys/statvfs.h>
+#endif
 #include <signal.h>
 #include <unistd.h>
 #include <stdio.h>

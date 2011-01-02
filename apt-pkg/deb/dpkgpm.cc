@@ -8,6 +8,11 @@
    ##################################################################### */
 									/*}}}*/
 // Includes								/*{{{*/
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <apt-pkg/dpkgpm.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/configuration.h>
@@ -22,6 +27,7 @@
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
@@ -33,13 +39,23 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#if HAVE_OPENPTY_PTY_H
 #include <pty.h>
+#elif HAVE_OPENPTY_UTIL_H
+#include <util.h>
+#else
+#error No header containing openpty() could be found
+#endif
 
 #include <config.h>
 #include <apti18n.h>
 									/*}}}*/
 
 using namespace std;
+
+#ifndef HAVE_SIGHANDLER_T
+typedef void (*sighandler_t)(int signum);
+#endif
 
 namespace
 {
@@ -72,6 +88,45 @@ namespace
       return strcmp(pair.first, target) == 0;
     }
   };
+
+#ifndef HAVE_MEMRCHR
+ /*
+  * Copyright (c) 2007 Todd C. Miller <Todd.Miller@courtesan.com>
+  *
+  * Permission to use, copy, modify, and distribute this software for any
+  * purpose with or without fee is hereby granted, provided that the above
+  * copyright notice and this permission notice appear in all copies.
+  *
+  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+
+	void *
+	memrchr(const void *s, int c, size_t n)
+	{
+		const unsigned char *cp;
+		
+		if (n != 0)
+		{
+			cp = (unsigned char *)s + n;
+			do
+			{
+				if (*(--cp) == (unsigned char)c)
+				{
+					return((void *)cp);
+				}
+			}
+			while (--n != 0);
+		}
+		return(NULL);
+	}
+#endif /*!HAVE_MEMRCHR*/
+
 }
 
 // DPkgPM::pkgDPkgPM - Constructor					/*{{{*/

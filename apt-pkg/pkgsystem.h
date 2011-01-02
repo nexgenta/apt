@@ -58,6 +58,8 @@ class pkgSystem
    const char *Label;
    pkgVersioningSystem *VS;
    
+   virtual void dummy(void);
+
    /* Prevent other programs from touching shared data not covered by
       other locks (cache or state locks) */
    virtual bool Lock() = 0;

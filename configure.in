@@ -173,6 +173,33 @@ AC_EGREP_HEADER(h_errno, netdb.h, [AC_MSG_RESULT(normal)],
        [AC_MSG_ERROR("not found.")])
    ])
 
+AC_MSG_CHECKING(for openpty)
+AC_EGREP_HEADER(openpty, pty.h, [
+  AC_MSG_RESULT(found in pty.h)
+  AC_DEFINE_UNQUOTED([HAVE_OPENPTY_PTY_H],[1],[Define if we have openpty() in pty.h])
+],[
+  AC_EGREP_HEADER(openpty, util.h, [
+    AC_MSG_RESULT(found in util.h)
+    AC_DEFINE_UNQUOTED([HAVE_OPENPTY_UTIL_H],[1],[Define if we have openpty() in util.h])
+  ],[
+    AC_MSG_ERROR([no header containing openpty() could be found])
+  ])
+])
+
+AC_CHECK_FUNC([memrchr])
+
+AC_MSG_CHECKING([for sighandler_t])
+AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <signal.h>
+],[
+sighandler_t handler_test;
+],[AC_MSG_RESULT([found])
+  AC_DEFINE_UNQUOTED([HAVE_SIGHANDLER_T],[1],[Define if we have sighandler_t])],
+[AC_MSG_RESULT([not found])])
+
+AC_CHECK_HEADERS([sys/statfs.h sys/statvfs.h sys/param.h sys/mount.h])
+
 dnl Check for debiandoc
 AC_PATH_PROG(DEBIANDOC_HTML,debiandoc2html)
 AC_PATH_PROG(DEBIANDOC_TEXT,debiandoc2text)
@@ -211,4 +238,27 @@ fi
 AC_SUBST(USE_NLS)
 AC_PATH_PROG(BASH, bash)
 
-AC_OUTPUT(environment.mak:buildlib/environment.mak.in makefile:buildlib/makefile.in doc/Doxyfile,make -s dirs)
+dnl apt-get requires -liconv whether or not --enable-nls is given; if NLS
+dnl is disabled, gettext doesn't bother looking for libiconv, and linking
+dnl fails. Try to get it one way or another.
+AC_CHECK_FUNC([iconv_open],,[
+		AC_CHECK_LIB([iconv],[iconv_open],[INTLLIBS="-liconv $INTLLIBS"])
+])
+AC_SUBST([INTLLIBS])
+
+if test x"$prefix" = x"NONE" ; then
+   prefix="$ac_default_prefix"
+fi
+if test x"$exec_prefix" = x"NONE" ; then
+   exec_prefix="$prefix"
+fi
+BINDIR=`eval echo $bindir | sed 's!^/!!'`
+LIBDIR=`eval echo $sysconfdir | sed 's!^/!!'`
+LOCALSTATEDIR=`eval echo $localstatedir | sed 's!^/!!'`
+SYSCONFDIR=`eval echo $sysconfdir | sed 's!^/!!'`
+AC_DEFINE_UNQUOTED([BINDIR],["$BINDIR"],[Path to the configured 'bin' directory, without leading slash])
+AC_DEFINE_UNQUOTED([LIBDIR],["$SYSCONFDIR"],[Path to the configured 'lib' directory, without leading slash])
+AC_DEFINE_UNQUOTED([LOCALSTATEDIR],["$LOCALSTATEDIR"],[Path to the configured 'var' directory, without leading slash])
+AC_DEFINE_UNQUOTED([SYSCONFDIR],["$SYSCONFDIR"],[Path to the configured 'etc' directory, without leading slash])
+
+AC_OUTPUT(environment.mak:buildlib/environment.mak.in GNUmakefile:buildlib/makefile.in doc/Doxyfile,make -s dirs)

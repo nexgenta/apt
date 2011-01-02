@@ -42,3 +42,11 @@ pkgSystem *pkgSystem::GetSystem(const char *Label)
    return 0;   
 }
 									/*}}}*/
+
+// System::dummy - Dummy method to ensure strong linkage /*{{{*/
+// ---------------------------------------------------------------------
+/* */
+void pkgSystem::dummy(void)
+{
+}
+									/*}}}*/

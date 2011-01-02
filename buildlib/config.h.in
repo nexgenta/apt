@@ -40,3 +40,42 @@
 
 /* The package name string */
 #undef PACKAGE
+
+/* Define if we have openpty() in pty.h */
+#undef HAVE_OPENPTY_PTY_H
+
+/* Define if we have openpty() in util.h */
+#undef HAVE_OPENPTY_UTIL_H
+
+/* Define if we have -liconv */
+#undef HAVE_LIBICONV
+
+/* Define if we have sys/statfs.h */
+#undef HAVE_SYS_STATFS_H
+
+/* Define if we have sys/param.h */
+#undef HAVE_SYS_PARAM_H
+
+/* Define if we have sys/mount.h */
+#undef HAVE_SYS_MOUNT_H
+
+/* Define if we have sys/statvfs.h */
+#undef HAVE_SYS_STATVFS_H
+
+/* Define if we have memrchr */
+#undef HAVE_MEMRCHR
+
+/* Define if we have sighandler_t */
+#undef HAVE_SIGHANDLER_T
+
+/* Path to the configured 'bin' directory, without leading slash */
+#undef BINDIR
+
+/* Path to the configured 'lib' directory, without leading slash */
+#undef LIBDIR
+
+/* Path to the configured 'var' directory, without leading slash */
+#undef LOCALSTATEDIR
+
+/* Path to the configured 'etc' directory, without leading slash */
+#undef SYSCONFDIR

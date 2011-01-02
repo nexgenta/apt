@@ -24,7 +24,12 @@ const char *pkgVersion = VERSION;
 const char *pkgLibVersion = Stringfy(APT_PKG_MAJOR) "."
                             Stringfy(APT_PKG_MINOR) "." 
                             Stringfy(APT_PKG_RELEASE);
-    
+
+/* Workaround for systems where libapt-pkg is not dynamically-linked */
+#include "deb/debsystem.h"
+
+extern debSystem debSys;
+
 // pkgInitConfig - Initialize the configuration class			/*{{{*/
 // ---------------------------------------------------------------------
 /* Directories are specified in such a way that the FindDir function will
@@ -40,26 +45,26 @@ bool pkgInitConfig(Configuration &Cnf)
    Cnf.Set("Dir","/");
    
    // State   
-   Cnf.Set("Dir::State","var/lib/apt/");
+   Cnf.Set("Dir::State", LOCALSTATEDIR "/lib/apt/");
    
    /* Just in case something goes horribly wrong, we can fall back to the
       old /var/state paths.. */
    struct stat St;   
-   if (stat("/var/lib/apt/.",&St) != 0 &&
-       stat("/var/state/apt/.",&St) == 0)
-      Cnf.Set("Dir::State","var/state/apt/");
+   if (stat("/" LOCALSTATEDIR "/lib/apt/.",&St) != 0 &&
+       stat("/" LOCALSTATEDIR "/state/apt/.",&St) == 0)
+      Cnf.Set("Dir::State", LOCALSTATEDIR "/state/apt/");
        
    Cnf.Set("Dir::State::lists","lists/");
    Cnf.Set("Dir::State::cdroms","cdroms.list");
    
    // Cache
-   Cnf.Set("Dir::Cache","var/cache/apt/");
+   Cnf.Set("Dir::Cache", LOCALSTATEDIR "/cache/apt/");
    Cnf.Set("Dir::Cache::archives","archives/");
    Cnf.Set("Dir::Cache::srcpkgcache","srcpkgcache.bin");
    Cnf.Set("Dir::Cache::pkgcache","pkgcache.bin");
    
    // Configuration
-   Cnf.Set("Dir::Etc","etc/apt/");
+   Cnf.Set("Dir::Etc", SYSCONFDIR "/apt/");
    Cnf.Set("Dir::Etc::sourcelist","sources.list");
    Cnf.Set("Dir::Etc::sourceparts","sources.list.d");
    Cnf.Set("Dir::Etc::vendorlist","vendors.list");
@@ -67,7 +72,7 @@ bool pkgInitConfig(Configuration &Cnf)
    Cnf.Set("Dir::Etc::main","apt.conf");
    Cnf.Set("Dir::Etc::parts","apt.conf.d");
    Cnf.Set("Dir::Etc::preferences","preferences");
-   Cnf.Set("Dir::Bin::methods","/usr/lib/apt/methods");
+   Cnf.Set("Dir::Bin::methods","/" LIBDIR "/apt/methods");
 
    // State   
    Cnf.Set("Dir::Log","var/log/apt");
@@ -115,8 +120,11 @@ bool pkgInitConfig(Configuration &Cnf)
 /* */
 bool pkgInitSystem(Configuration &Cnf,pkgSystem *&Sys)
 {
-   Sys = 0;
+   Sys = 0;   
    string Label = Cnf.Find("Apt::System","");
+   
+   debSys.dummy();
+   
    if (Label.empty() == false)
    {
       Sys = pkgSystem::GetSystem(Label.c_str());
@@ -128,6 +136,7 @@ bool pkgInitSystem(Configuration &Cnf,pkgSystem *&Sys)
       signed MaxScore = 0;
       for (unsigned I = 0; I != pkgSystem::GlobalListLen; I++)
       {
+		  fprintf(stderr, "Checking %s\n", pkgSystem::GlobalList[I]->Label);
 	 signed Score = pkgSystem::GlobalList[I]->Score(Cnf);
 	 if (Score > MaxScore)
 	 {
