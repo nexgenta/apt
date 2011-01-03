@@ -88,7 +88,7 @@ dnl This is often the dpkg architecture string.
 dnl First check against the full canonical canoncial-system-type in $target
 dnl and if that fails, just look for the cpu
 AC_MSG_CHECKING(debian architecture)
-archset="`dpkg-architecture -qDEB_HOST_ARCH`"
+archset="`dpkg-architecture -qDEB_HOST_ARCH -t$host`"
 if test "x$archset" = "x"; then
    AC_MSG_ERROR([failed: use --host= or output from dpkg-architecture])
 fi
@@ -253,11 +253,11 @@ if test x"$exec_prefix" = x"NONE" ; then
    exec_prefix="$prefix"
 fi
 BINDIR=`eval echo $bindir | sed 's!^/!!'`
-LIBDIR=`eval echo $sysconfdir | sed 's!^/!!'`
+LIBDIR=`eval echo $libdir | sed 's!^/!!'`
 LOCALSTATEDIR=`eval echo $localstatedir | sed 's!^/!!'`
 SYSCONFDIR=`eval echo $sysconfdir | sed 's!^/!!'`
 AC_DEFINE_UNQUOTED([BINDIR],["$BINDIR"],[Path to the configured 'bin' directory, without leading slash])
-AC_DEFINE_UNQUOTED([LIBDIR],["$SYSCONFDIR"],[Path to the configured 'lib' directory, without leading slash])
+AC_DEFINE_UNQUOTED([LIBDIR],["$LIBDIR"],[Path to the configured 'lib' directory, without leading slash])
 AC_DEFINE_UNQUOTED([LOCALSTATEDIR],["$LOCALSTATEDIR"],[Path to the configured 'var' directory, without leading slash])
 AC_DEFINE_UNQUOTED([SYSCONFDIR],["$SYSCONFDIR"],[Path to the configured 'etc' directory, without leading slash])
 

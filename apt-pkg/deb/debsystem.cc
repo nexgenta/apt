@@ -160,7 +160,7 @@ bool debSystem::Initialize(Configuration &Cnf)
       which is yet to be determined. The functions in pkgcachegen should
       be the only users of these */
    Cnf.CndSet("Dir::State::userstatus","status.user"); // Defunct
-   Cnf.CndSet("Dir::State::status","/var/" LOCALSTATEDIR "/dpkg/status");
+   Cnf.CndSet("Dir::State::status", "/" LOCALSTATEDIR "/dpkg/status");
    Cnf.CndSet("Dir::Bin::dpkg","/" BINDIR "/dpkg");
 
    if (StatusFile) {
@@ -189,7 +189,7 @@ bool debSystem::ArchiveSupported(const char *Type)
 signed debSystem::Score(Configuration const &Cnf)
 {
    signed Score = 0;
-   if (FileExists(Cnf.FindFile("Dir::State::status","/" LOCALSTATEDIR "/lib/dpkg/status")) == true)
+   if (FileExists(Cnf.FindFile("Dir::State::status","/" LOCALSTATEDIR "/dpkg/status")) == true)
        Score += 10;
    if (FileExists(Cnf.FindFile("Dir::Bin::dpkg","/" BINDIR "/dpkg")) == true)
       Score += 10;

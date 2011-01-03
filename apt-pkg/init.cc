@@ -136,7 +136,6 @@ bool pkgInitSystem(Configuration &Cnf,pkgSystem *&Sys)
       signed MaxScore = 0;
       for (unsigned I = 0; I != pkgSystem::GlobalListLen; I++)
       {
-		  fprintf(stderr, "Checking %s\n", pkgSystem::GlobalList[I]->Label);
 	 signed Score = pkgSystem::GlobalList[I]->Score(Cnf);
 	 if (Score > MaxScore)
 	 {
