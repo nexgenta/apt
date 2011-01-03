@@ -595,6 +595,7 @@ bool debListParser::Step()
          inside the Status file, so that is a positive return */
       const char *Start;
       const char *Stop;
+	  const char *p, *a, *e;
       if (Section.Find("Architecture",Start,Stop) == false)
 	 return true;
 
@@ -603,6 +604,22 @@ bool debListParser::Step()
 
       if (stringcmp(Start,Stop,"all") == 0)
 	 return true;
+
+	  if (Stop - Start > 10)
+	  {
+		  p = Stop - 10;
+		  if (stringcmp(p, Stop, "-universal") == 0)
+		  {
+			  a = Arch.c_str();
+			  if ((e = strchr(a, '-')))
+			  {
+				  if (stringcmp(Start, p, a, e) == 0)
+				  {
+					  return true;
+				  }
+			  }
+		  }
+	  }
 
       iOffset = Tags.Offset();
    }   
