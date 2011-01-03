@@ -257,8 +257,22 @@ LIBDIR=`eval echo $libdir | sed 's!^/!!'`
 LOCALSTATEDIR=`eval echo $localstatedir | sed 's!^/!!'`
 SYSCONFDIR=`eval echo $sysconfdir | sed 's!^/!!'`
 AC_DEFINE_UNQUOTED([BINDIR],["$BINDIR"],[Path to the configured 'bin' directory, without leading slash])
+AC_SUBST([BINDIR])
 AC_DEFINE_UNQUOTED([LIBDIR],["$LIBDIR"],[Path to the configured 'lib' directory, without leading slash])
+AC_SUBST([LIBDIR])
 AC_DEFINE_UNQUOTED([LOCALSTATEDIR],["$LOCALSTATEDIR"],[Path to the configured 'var' directory, without leading slash])
+AC_SUBST([LOCALSTATEDIR])
 AC_DEFINE_UNQUOTED([SYSCONFDIR],["$SYSCONFDIR"],[Path to the configured 'etc' directory, without leading slash])
+AC_SUBST([SYSCONFDIR])
 
-AC_OUTPUT(environment.mak:buildlib/environment.mak.in GNUmakefile:buildlib/makefile.in doc/Doxyfile,make -s dirs)
+AC_OUTPUT([
+  environment.mak:buildlib/environment.mak.in
+  GNUmakefile:buildlib/makefile.in
+  doc/Doxyfile
+  scripts/dselect/install:dselect/install.in
+  scripts/dselect/setup:dselect/setup.in
+  scripts/dselect/update:dselect/update.in],
+[chmod +x scripts/dselect/install
+chmod +x scripts/dselect/setup
+chmod +x scripts/dselect/update
+make -s dirs])

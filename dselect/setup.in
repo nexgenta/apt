@@ -23,10 +23,19 @@
 my $vardir=$ARGV[0];
 my $method=$ARGV[1];
 my $option=$ARGV[2];
-my $config_file = '/etc/apt/sources.list';
+my $config_file = '/@SYSCONFDIR@/apt/sources.list';
 
-my $boldon=`setterm -bold on`;
-my $boldoff=`setterm -bold off`;
+my $boldon=`setterm -bold on 2>/dev/null`;
+my $boldoff=`setterm -bold off 2>/dev/null`;
+
+if(!defined $boldon)
+{
+	$boldon = '';
+}
+if(!defined $boldoff)
+{
+	$boldoff = '';
+}
 
 my @known_types           = ('deb');
 my @known_access         = ('http', 'ftp', 'file');
