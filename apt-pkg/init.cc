@@ -75,7 +75,7 @@ bool pkgInitConfig(Configuration &Cnf)
    Cnf.Set("Dir::Bin::methods","/" LIBDIR "/apt/methods");
 
    // State   
-   Cnf.Set("Dir::Log","var/log/apt");
+   Cnf.Set("Dir::Log", LOCALSTATEDIR "/log/apt");
    Cnf.Set("Dir::Log::Terminal","term.log");
 
    // Translation
